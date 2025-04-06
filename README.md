@@ -4,20 +4,19 @@ A machine learning web app that trains regression models on real estate data and
 
 ![Scikit-learn](https://img.shields.io/badge/framework-scikit--learn-blue)
 ![Streamlit](https://img.shields.io/badge/ui-streamlit-orange)
-![Model Accuracy](https://img.shields.io/badge/model-MAE%20~%2011k-success)
+![Model Accuracy](https://img.shields.io/badge/RandomForrest-MAE%20~%2011k-success)
 
 
-## How To Run
-```bash
-# Install dependencies
-pip install -r requirements.txt
+## Live Demo
+Access the deployed app here: [Real Estate Price Estimation App](https://real-estate-price-estimation-utm6wfs9dykdimegfmmwrw.streamlit.app/)
 
-# Train and save models
-python train_model.py
 
-# Launch Streamlit app
-streamlit run app.py
-```
+## Features
+- End-to-end ML pipeline with in-app training and prediction
+- Streamlit-based UI for real-time price estimation
+- Model selection: Decision Tree, Random Forest, Linear Regression
+- Clean form-based input with validation
+- Cached model loading and modular architecture
 
 
 ## Dataset
@@ -28,10 +27,6 @@ streamlit run app.py
   - Boolean flags: `basement`, `popular`, `recession`
   - Derived: `property_age`
   - One-hot encoded: `property_type_Bunglow`, `property_type_Condo`
-- Preprocessing:
-  - One-hot encoding for `property_type`
-  - Derived feature: `property_age = year_sold - year_built`
-  - Stratified train-test split based on `property_type_Bunglow`
 
 
 ## Model Architecture
@@ -41,15 +36,41 @@ streamlit run app.py
 - Training: Handled in-app or via `train_model.py` script with stratified sampling
 
 
+## How to Run
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/AhmedOT22/loan-eligibility-app.git
+   cd loan-eligibility-app
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Train the model**
+   ```bash
+   python train_model.py
+   ```
+
+4. **Launch the app**
+   ```bash
+   streamlit run app.py
+   ```
+
+
 ## Results
 - Evaluation is performed on the training set immediately after each model is trained.
 - Evaluation metrics (Mean Absolute Error):
-  - Decision Tree MAE: 50,987.39
-  - Random Forest MAE: 17,095.51 (Best Performer)
-  - Linear Regression MAE: 86,913.32
+  - Decision Tree MAE: **50,987.39**
+  - Random Forest MAE: **17,095.51**
+  - Linear Regression MAE: **86,913.32**
+- Clean input validation (e.g., no future year entries)
+- Dynamic model selection from sidebar
 
 
-## 📋 Requirements
+## Requirements
 - Python 3.8+
 - streamlit
 - scikit-learn
@@ -58,5 +79,8 @@ streamlit run app.py
 - matplotlib
 
 
+## Author
+Developed by [Ahmed Ouazzani](https://github.com/AhmedOT22)
+
 ## License
-MIT License © 2024
+MIT License © 2025
