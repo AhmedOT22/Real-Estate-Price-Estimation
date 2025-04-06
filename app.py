@@ -35,8 +35,19 @@ def load_models():
 
 # Load models once
 model_dict = load_models()
+
+if not model_dict:
+    st.error("No models found. Please ensure models are available in the 'models/' directory.")
+    st.stop()  # Exit if no models were loaded
+
 model_choice = st.sidebar.selectbox("Choose Model", list(model_dict.keys()))
+
+if model_choice is None:
+    st.warning("Please select a model to proceed.")
+    st.stop()
+
 model = model_dict[model_choice]
+
 feature_names = model.feature_names_in_
 
 # Centered layout for form
