@@ -40,8 +40,8 @@ Access the deployed app here: [Real Estate Price Estimation App](https://real-es
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/AhmedOT22/loan-eligibility-app.git
-   cd loan-eligibility-app
+   git clone https://github.com/AhmedOT22/Real-Estate-Price-Estimation.git
+   cd Real-Estate-Price-Estimation
    ```
 
 2. **Install dependencies**
@@ -61,14 +61,15 @@ Access the deployed app here: [Real Estate Price Estimation App](https://real-es
 
 
 ## Results
-- Evaluation is performed on the training set immediately after each model is trained.
-- Evaluation metrics (Mean Absolute Error):
-  - Decision Tree MAE: **50,987.39**
-  - Random Forest MAE: **17,095.51**
-  - Linear Regression MAE: **86,913.32**
-- Clean input validation (e.g., no future year entries)
-- Dynamic model selection from sidebar
 
+| Model               | Train MAE    | Test MAE     |
+|---------------------|--------------|--------------|
+| Decision Tree       | 49,856.81    | 53,343.82    |
+| Random Forest       | 16,970.25    | 46,377.51    |
+| Linear Regression   | 87,275.74    | 85,566.09    |
+
+- Random Forest achieves the lowest training error but shows some overfitting on unseen data.
+- Decision Tree offers a reasonable balance between simplicity and generalization.
 
 ## Requirements
 - Python 3.8+

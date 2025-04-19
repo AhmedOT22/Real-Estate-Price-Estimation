@@ -6,7 +6,7 @@ from datetime import datetime
 from src.models import prediction
 from src.models import storage
 from src.utils.form import fetch_input
-from config import MODEL_PATHS
+from src.config import MODEL_PATHS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
