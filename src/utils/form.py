@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-from config import INPUT_RANGES
+from src.config import INPUT_RANGES
 
 def fetch_input(feature_names):
     """

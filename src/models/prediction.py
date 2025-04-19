@@ -13,9 +13,13 @@ def predict_single(model, input_values):
         float: Predicted value.
     """
     try:
+        # Automatically correct shape if input_values is flat
+        if isinstance(input_values[0], (int, float)):
+            input_values = [input_values]  # wrap into a list of lists
+
         input_df = pd.DataFrame(input_values, columns=model.feature_names_in_)
         prediction = model.predict(input_df)
-        logging.info(f"Prediction made successfully")
+        logging.info("Prediction completed successfully.")
         return prediction[0]
     except Exception as e:
         logging.error(f"Prediction failed: {e}")
