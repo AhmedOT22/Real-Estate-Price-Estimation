@@ -1,7 +1,12 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+HISTORICAL_YEARS = (1993, 2016)
+
 MODEL_PATHS = {
-    "Decision Tree": "models/DT_Model.pkl",
-    "Random Forest": "models/RF_Model.pkl",
-    "Linear Regression": "models/LR_Model.pkl"
+    "Decision Tree": BASE_DIR / "models/DT_Model.pkl",
+    "Random Forest": BASE_DIR / "models/RF_Model.pkl",
+    "Linear Regression": BASE_DIR / "models/LR_Model.pkl"
 }
 
 # Input defaults and boundaries

@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-from src.config import INPUT_RANGES
+from src.config import INPUT_RANGES, HISTORICAL_YEARS
 
 def fetch_input(feature_names):
     """
@@ -12,16 +12,16 @@ def fetch_input(feature_names):
     Returns:
         list: Ordered list of input values matching the feature names.
     """
-    current_year = datetime.now().year
+    current_year = HISTORICAL_YEARS[1]
 
     # Property type selection (one-hot encoding)
-    property_type = st.radio("Property Type", ["Bunglow", "Condo"], help="Select the type of property")
-    property_type_bunglow = int(property_type == "Bunglow")
+    property_type = st.radio("Property Type", ["Bungalow", "Condo"], help="Select the type of property")
+    property_type_bunglow = int(property_type == "Bungalow")
     property_type_condo = int(property_type == "Condo")
 
     # Year inputs with validation
     year_built = st.number_input("Year Built", min_value=INPUT_RANGES["year_built_min"], max_value=current_year, value=2000, help="Construction year of the property")
-    year_sold = st.number_input("Year Sold", min_value=year_built, max_value=current_year, value=current_year, help="Year the property was sold")
+    year_sold = st.number_input("Year Sold", min_value=max(year_built, HISTORICAL_YEARS[0]), max_value=current_year, value=current_year, help="Year the property was sold")
     calculated_age = year_sold - year_built
 
     # Numeric financial and physical attributes
@@ -49,4 +49,7 @@ def fetch_input(feature_names):
     }
 
     # Return values in the correct order as expected by the model
-    return [feature_inputs.get(feat, 0) for feat in feature_names]
+    missing = set(feature_names) - set(feature_inputs)
+    if missing:
+        raise ValueError(f'Unsupported model features: {sorted(missing)}')
+    return [feature_inputs[feat] for feat in feature_names]

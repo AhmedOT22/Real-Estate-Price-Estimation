@@ -35,3 +35,5 @@ Thumbs.db
 
 # Pytest cache
 .pytest_cache/
+# Generated evaluation runs
+reports/latest/

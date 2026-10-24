@@ -1,5 +1,6 @@
-streamlit
-scikit-learn
-pandas
-numpy
-matplotlib
+streamlit>=1.40,<2
+# Bundled models were trained with this version; keep serving compatible.
+scikit-learn==1.6.1
+pandas>=2.2,<3
+numpy>=1.26,<3
+matplotlib>=3.8,<4

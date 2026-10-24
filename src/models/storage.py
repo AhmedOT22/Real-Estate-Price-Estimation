@@ -1,3 +1,4 @@
+from pathlib import Path
 import pickle
 import logging
 
@@ -10,6 +11,7 @@ def save_model(model, filename):
         filename (str): Path where the model should be saved.
     """
     try:
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
         with open(filename, 'wb') as f:
             pickle.dump(model, f)
         logging.info(f"Model saved to {filename}")

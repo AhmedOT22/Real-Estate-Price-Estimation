@@ -13,7 +13,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 st.set_page_config(page_title="Real Estate Price Predictor", layout="centered")
 st.title("Real Estate Price Prediction App")
-st.markdown("Enter property details below to estimate its market price.")
+st.markdown("Enter property details below to explore a historical model estimate.")
+
+st.caption("Educational demonstration using historical records from 1993–2016. Estimates are not current market valuations; currency and geography are not established by the bundled CSV.")
 
 # Load all models from config paths
 @st.cache_resource

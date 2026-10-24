@@ -1,26 +1,21 @@
+"""Single-row prediction with an explicit feature-order contract."""
+import numpy as np
 import pandas as pd
-import logging
+
 
 def predict_single(model, input_values):
-    """
-    Predicts a single output using the given model and input values.
-
-    Args:
-        model: Trained ML model with feature_names_in_ attribute.
-        input_values (list): List of feature values matching the model's input order.
-
-    Returns:
-        float: Predicted value.
-    """
     try:
-        # Automatically correct shape if input_values is flat
-        if isinstance(input_values[0], (int, float)):
-            input_values = [input_values]  # wrap into a list of lists
-
-        input_df = pd.DataFrame(input_values, columns=model.feature_names_in_)
-        prediction = model.predict(input_df)
-        logging.info("Prediction completed successfully.")
-        return prediction[0]
-    except Exception as e:
-        logging.error(f"Prediction failed: {e}")
-        raise
+        values = np.asarray(input_values, dtype=float)
+    except (TypeError, ValueError) as error:
+        raise ValueError('Prediction inputs must be numeric.') from error
+    if values.ndim == 1:
+        values = values.reshape(1, -1)
+    if values.ndim != 2 or values.shape != (1, len(model.feature_names_in_)):
+        raise ValueError(f'Expected one property with {len(model.feature_names_in_)} feature values.')
+    if not np.isfinite(values).all():
+        raise ValueError('Prediction inputs must be finite, with no missing values.')
+    frame = pd.DataFrame(values, columns=model.feature_names_in_)
+    result = float(model.predict(frame)[0])
+    if not np.isfinite(result):
+        raise ValueError('The model returned a non-finite prediction.')
+    return result
