@@ -1,111 +1,82 @@
 # Real Estate Price Estimation
 
-A machine learning web app that trains regression models on real estate data and provides a user-friendly interface for predicting property prices based on user inputs. The app supports model training, prediction, and automatic visualization of results.
+A historical property-price modelling project with a Streamlit interface and a reproducible comparison of Random Forest, Decision Tree, and Linear Regression against a median-price baseline.
 
-![Scikit-learn](https://img.shields.io/badge/framework-scikit--learn-blue)
-![Streamlit](https://img.shields.io/badge/ui-streamlit-orange)
+[Streamlit app](https://real-estate-price-estimation-utm6wfs9dykdimegfmmwrw.streamlit.app/) · [Training workflow](train_model.py) · [Saved evaluation](reports/baseline/metrics.csv)
 
----
+## Scope and approach
 
-## Live Demo
-Access the deployed app here: [Real Estate Price Estimation App](https://real-estate-price-estimation-utm6wfs9dykdimegfmmwrw.streamlit.app/)
+The bundled, already-prepared CSV contains **1,863 records**, 14 numeric features, and sale years from **1993 to 2016**. The app explores that historical feature space. It does not provide current market-adjusted valuations. Geography, currency, source attribution, and the original preparation history are not established by the CSV and remain documentation gaps.
 
----
+The comparison uses a reproducible 80/20 random holdout stratified by property type, with seed 42. All models use the same training and evaluation rows. A median-price baseline is fitted on training targets only. The feature contract checks missing/non-finite values, unexpected columns, binary flags, mutually exclusive property types, and consistency of property age.
 
-## Features
-- End-to-end ML pipeline with in-app training, evaluation, and prediction
-- Streamlit-based UI for real-time price estimation
-- Model selection: Decision Tree, Random Forest, Linear Regression
-- Clean form-based input with validation and error handling
-- Cached model loading and modular architecture
-- Automatic generation of evaluation plots saved to `figures/`
+## Reproducible results
 
----
+| Model | Train MAE | Holdout MAE | Holdout RMSE | Holdout R² |
+| --- | ---: | ---: | ---: | ---: |
+| Random Forest | 17,612 | 41,391 | 58,782 | 0.841 |
+| Decision Tree | 49,420 | 52,426 | 70,149 | 0.774 |
+| Linear Regression | 86,632 | 84,660 | 107,826 | 0.466 |
+| Median baseline | 123,494 | 120,524 | 149,825 | -0.031 |
 
-## Dataset
-- Path: `data/raw/prices.csv`
-- Target Column: `price`
-- Features Used:
-  - `year_sold`, `property_tax`, `insurance`, `beds`, `baths`, `sqft`, `year_built`, `lot_size`
-  - Boolean flags: `basement`, `popular`, `recession`
-  - Derived: `property_age`
-  - One-hot encoded: `property_type_Bunglow`, `property_type_Condo`
-- Preprocessing:
-  - One-hot encoding for `property_type`
-  - Derived feature: `property_age = year_sold - year_built`
-  - Stratified train-test split based on `property_type_Bunglow`
+![Reproduced holdout comparison](reports/baseline/mae_comparison.png)
 
----
+These results were reproduced from the bundled CSV with scikit-learn 1.6.1. Random Forest has the lowest holdout error among these fixed candidates, with a substantial train/holdout gap that should be investigated before more complex modelling. MAE is expressed in the CSV's price units; no currency is assumed here.
 
-## Model Architecture
-- Models: Linear Regression, Decision Tree, Random Forest
-- Key components: Scikit-learn pipeline, centralized config
-- Evaluation Metric: Mean Absolute Error (MAE)
-- Training: Handled via `train_model.py` script with stratified sampling and saved to `models/`
-- Visualizations: Model performance plots and tree visualizations saved automatically
+[Run metadata](reports/baseline/run.json) records the input checksum, exact split indices, parameters, and package versions. [Prediction rows](reports/baseline/predictions.csv) allow independent error analysis. This is a retrospective random holdout, **not** a future-market or geographic generalization benchmark. Repeated property identities and availability of insurance/tax/listing fields at prediction time are not verified.
 
----
+The root `models/` and older `figures/` artifacts predate this reproducible run and were not overwritten. In particular, the deployed app loads those older models; the table above evaluates newly fitted candidates, not the deployed artifact files. App availability has not been verified as part of this code update.
 
-## How to Run
+## Run locally
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/AhmedOT22/Real-Estate-Price-Estimation.git
-   cd Real-Estate-Price-Estimation
-   ```
+Use Python 3.11+ from the repository root:
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+git clone https://github.com/AhmedOT22/Real-Estate-Price-Estimation.git
+cd Real-Estate-Price-Estimation
+python -m venv .venv
+# macOS/Linux:
+source .venv/bin/activate
+# Windows PowerShell instead: .venv\Scripts\Activate.ps1
+python -m pip install -r requirements-dev.txt
+streamlit run app.py
+```
 
-3. **Train the models and generate plots**
-   ```bash
-   python train_model.py
-   ```
+The serving dependency keeps scikit-learn at 1.6.1 to match the bundled model artifacts. Load pickle artifacts only from trusted sources.
 
-4. **Launch the Streamlit app**
-   ```bash
-   streamlit run app.py
-   ```
+## Train and evaluate
 
----
+```bash
+python train_model.py
+# Optional: save candidate models under the report directory
+python train_model.py --output reports/candidate --save-models
+```
 
-## Results
+By default, evaluation writes to `reports/latest/`: `metrics.csv`, `predictions.csv`, `run.json`, and `mae_comparison.png`. It does not replace the app's model files. `--save-models` writes candidate pickles under the selected output directory, allowing comparison before any deployment change. Importing `train_model` no longer starts training or writes artifacts.
 
-| Model               | Train MAE    | Test MAE     |
-|---------------------|--------------|--------------|
-| Decision Tree       | 52174.76     | 53813.25     |
-| Random Forest       | 17291.99     | 42485.02     |
-| Linear Regression   | 84268.66     | 86375.82   |
+The evaluation uses fixed model choices, without holdout tuning. Check performance on a separate validation scheme before adopting new hyperparameters. Original tree-diagram utilities remain in `src/models/visualization.py`; a single tree diagram does not explain the entire forest.
 
-- Random Forest achieves the lowest training error but shows some overfitting on unseen data.
-- Decision Tree offers a reasonable balance between simplicity and generalization.
+## Inputs and inference
 
-### 📊 Visualizations
-Plots automatically generated and saved to `figures/` after training:
+The prepared table uses `price` as target and:
 
-- **MAE Comparison Plot:** `figures/mae_comparison.png`
-- **Decision Tree Visualization:** `figures/decision_tree.png`
-- **Sample Random Forest Tree:** `figures/random_forest_tree.png`
+- `year_sold`, `property_tax`, `insurance`, `beds`, `baths`, `sqft`, `year_built`, `lot_size`;
+- binary `basement`, `popular`, `recession`;
+- `property_age = year_sold - year_built`;
+- one-hot `property_type_Bunglow` and `property_type_Condo` (the stored spelling is retained for model compatibility).
 
----
+The app displays “Bungalow” while preserving the artifact's feature names. Sale-year inputs stay within the observed historical period. Prediction accepts exactly one finite numeric feature row in the model's expected order; unknown form features fail explicitly instead of being silently filled with zero.
 
-## Requirements
-- Python 3.8+
-- streamlit
-- scikit-learn
-- pandas
-- numpy
-- matplotlib
-- pytest (for unit tests)
+## Tests
 
----
+```bash
+python -m pytest -q
+```
 
-## Author
-Developed by [Ahmed Ouazzani](https://github.com/AhmedOT22)
+Tests cover repeatable/disjoint splits, training schema violations, single-row prediction shape and numeric validity, bundled-model loading, and storage round trips. CI runs the suite for pushes and pull requests.
 
----
+## Next modelling decisions
 
-## License
-MIT License © 2025
+Before claiming broader usefulness, establish source provenance and currency, check whether repeated properties need a grouped split, and evaluate a chronological split. Then consider train-only imputation/encoding for genuinely raw inputs, error analysis by property type/year/price band, and better-calibrated uncertainty. Do not infer current-market suitability from this random holdout.
+
+[MIT License](LICENSE) · [Ahmed Ouazzani](https://github.com/AhmedOT22)
